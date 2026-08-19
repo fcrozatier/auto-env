@@ -57,7 +57,7 @@ export type Options = {
    *
    * Set to `null` to not emit the file
    *
-   * * @default ".generated/env.private.ts"
+   * @default ".generated/env.private.ts"
    */
   privateOutputPath?: string | undefined | null;
   /**
@@ -111,7 +111,8 @@ const PUBLIC_OUTPUT_DEFAULT = ".env.public.ts";
 const PRIVATE_OUTPUT_DEFAULT = ".env.private.ts";
 
 /**
- * Reads and validates your environment variables
+ * Reads and validates your environment variables.
+ *
  * Outputs TypeScript modules for type-safe env imports
  */
 export async function autoEnv(options?: Options): Promise<{

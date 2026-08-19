@@ -2,6 +2,9 @@ import { autoEnv } from "../main.ts";
 import * as v from "valibot";
 
 await autoEnv({
+  inputPath: "e2e/.env",
+  privateOutputPath: "e2e/.env.private.ts",
+  publicOutputPath: "e2e/.env.public.ts",
   config: {
     MODE: {
       schema: v.picklist(["dev", "staging", "prod"]),

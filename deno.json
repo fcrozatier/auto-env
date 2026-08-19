@@ -7,9 +7,10 @@
   },
   "tasks": {
     "check:all": "deno fmt --check && deno lint && deno check && deno test -A && deno test -A --doc && deno doc --lint main.ts",
-    "gen:env": "deno watch --watch-hmr=.env -A scripts/auto-env.ts",
-    "dev": {
-      "command": "deno watch -A start.ts",
+    "test:coverage": "deno test -A --coverage && open coverage/html/index.html",
+    "gen:env": "deno watch --watch-hmr=e2e/.env -A e2e/auto-env.ts",
+    "test:e2e": {
+      "command": "deno watch -A e2e/start.ts",
       "dependencies": ["gen:env"]
     }
   },

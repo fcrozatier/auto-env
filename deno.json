@@ -6,7 +6,7 @@
     "noUncheckedIndexedAccess": true
   },
   "tasks": {
-    "check:all": "deno fmt --check && deno lint && deno check && deno test -A && deno test -A --doc && deno doc --lint main.ts",
+    "check:all": "deno fmt --check && deno lint && deno check && deno test -A && deno test -A --doc && deno doc --lint src/main.ts",
     "test:coverage": "deno test -A --coverage && open coverage/html/index.html",
     "gen:env": "deno watch --watch-hmr=e2e/.env -A e2e/auto-env.ts",
     "test:e2e": {
@@ -28,7 +28,7 @@
     "valibot": "jsr:@valibot/valibot@^1.4.2"
   },
   "fmt": {
-    "exclude": ["e2e/.env*"]
+    "exclude": [".env*"]
   },
   "publish": {
     "exclude": [

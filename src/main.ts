@@ -61,7 +61,7 @@ export type Options = {
    */
   privateOutputPath?: string | undefined | null;
   /**
-   * Granular configuration Record. The keys correspond to your env keys you can provide it with a `EnvVarConfig` object for custom validation with a standard schema or control whether it is public or private
+   * Environment variable configuration record. Keys correspond to your env keys. Values can be an {@linkcode EnvVarConfig} object
    *
    * @example
    * ```ts

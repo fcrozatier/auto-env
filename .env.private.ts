@@ -5,6 +5,7 @@ export const DEV = true;
 export const PORT = 8000;
 export const RATE_LIMIT = 500;
 export const URL = "http://localhost:8000";
+export const EMAIL = "contact@example.com";
 export const GREETING = "Hello, World!";
 export const OPTIONAL_FLAG = undefined;
 export const ALSO_EMPTY = "";

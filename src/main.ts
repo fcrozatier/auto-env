@@ -111,7 +111,8 @@ const PUBLIC_OUTPUT_DEFAULT = ".env.public.ts";
 const PRIVATE_OUTPUT_DEFAULT = ".env.private.ts";
 
 /**
- * Define and configure your environment variables
+ * Reads and validates your environment variables
+ * Outputs TypeScript modules for type-safe env imports
  */
 export async function autoEnv(options?: Options): Promise<{
   publicModuleText: string;

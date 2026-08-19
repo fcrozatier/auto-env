@@ -7,12 +7,13 @@
   },
   "tasks": {
     "check:all": "deno fmt --check && deno lint && deno check && deno test -A && deno test -A --doc && deno doc --lint src/main.ts",
-    "test:coverage": "deno test -A --coverage && open coverage/html/index.html",
+    "gen:docs": "deno doc --html src/main.ts && open docs/index.html",
     "gen:env": "deno watch --watch-hmr=e2e/.env -A e2e/auto-env.ts",
     "test:e2e": {
       "command": "deno watch -A e2e/start.ts",
       "dependencies": ["gen:env"]
-    }
+    },
+    "test:coverage": "deno test -A --coverage && open coverage/html/index.html"
   },
   "exports": {
     ".": "./src/main.ts"

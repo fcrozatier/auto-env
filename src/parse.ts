@@ -8,7 +8,7 @@ import {
   seq,
 } from "@fcrozatier/monarch";
 import { literal, regex, token, whitespaces } from "@fcrozatier/monarch/common";
-import { ERROR_MESSAGE } from "$/src/errors.ts";
+import { ERROR_MESSAGE } from "$/src/constants.ts";
 
 /**
  * The type of an env value

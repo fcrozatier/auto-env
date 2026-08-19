@@ -30,6 +30,6 @@
     "exclude": [".env*"]
   },
   "publish": {
-    "exclude": [".github", ".vscode", ".env*", "scripts", "start.ts", "tests"]
+    "exclude": [".github", ".vscode", "assets", ".env*", "scripts", "start.ts", "tests"]
   }
 }

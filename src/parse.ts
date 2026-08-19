@@ -8,6 +8,7 @@ import {
   seq,
 } from "@fcrozatier/monarch";
 import { literal, regex, token, whitespaces } from "@fcrozatier/monarch/common";
+import { ERROR_MESSAGE } from "$/src/errors.ts";
 
 /**
  * The type of an env value
@@ -89,9 +90,7 @@ export function parse(content: string) {
       (_match, key) => {
         const pair = envs.find(([k]) => k === key);
         if (!pair) {
-          throw new Error(
-            `[auto-env]: Can't interpolate undefined key "${key}"`,
-          );
+          throw new Error(ERROR_MESSAGE.UndefinedInterpolationError(key));
         }
 
         return String(pair[1]);
@@ -102,4 +101,11 @@ export function parse(content: string) {
   }
 
   return envs;
+}
+
+export async function parseEnvFile(
+  path: string,
+): Promise<[string, EnvValueType][]> {
+  const textFile = await Deno.readTextFile(path);
+  return parse(textFile);
 }

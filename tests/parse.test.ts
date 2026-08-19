@@ -1,6 +1,7 @@
 import { assertEquals, unreachable } from "@std/assert";
 import { assert } from "@std/assert/assert";
-import { inlineComment, parse } from "../parser.ts";
+import { inlineComment, parse } from "$/src/parse.ts";
+import { ERROR_MESSAGE } from "$/src/errors.ts";
 
 Deno.test("handles basic syntax", () => {
   const [row] = parse("KEY=value");
@@ -24,6 +25,18 @@ Deno.test("ignores inline comments", () => {
   const [row] = parse("KEY=value # a comment");
 
   assertEquals(row, ["KEY", "value"]);
+});
+
+Deno.test("handles booleans", () => {
+  const rows = parse(`DEV=true\n PROD=false`);
+
+  assertEquals(rows, [["DEV", true], ["PROD", false]]);
+});
+
+Deno.test("handles numbers", () => {
+  const [row] = parse(`PORT=3000`);
+
+  assertEquals(row, ["PORT", 3000]);
 });
 
 Deno.test("handles double quotes", () => {
@@ -116,7 +129,7 @@ URL="https://$\{BASE}:$\{PORT}/$\{PATH}"
     unreachable();
   } catch (error) {
     assert(error instanceof Error);
-    assert(error.message === `[auto-env]: Can't interpolate undefined key "PORT"`);
+    assert(error.message === ERROR_MESSAGE.UndefinedInterpolationError("PORT"));
   }
 });
 

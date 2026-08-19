@@ -6,7 +6,8 @@ validation, auto generation, scoping, and good defaults.
 **Good defaults**
 
 `Auto-env` lets you fall into
-[the pit of success](https://blog.codinghorror.com/falling-into-the-pit-of-success/) and handles `booleans`, `numbers` and `undefined` correctly. For example this
+[the pit of success](https://blog.codinghorror.com/falling-into-the-pit-of-success/)
+and handles `booleans`, `numbers` and `undefined` correctly. For example this
 `.env` file is parsed as you would expect by default
 
 ```
@@ -40,8 +41,9 @@ In particular:
 
 **Type-safe**
 
-`Auto-env` generates TypeScript modules you can alias and directly import from. This prevents typos in environment variable names and offers full type-safety and
-documentation.
+`Auto-env` generates TypeScript modules you can alias and directly import from.
+This prevents typos in environment variable names and offers full type-safety
+and documentation.
 
 ![demo](./assets/demo.gif)
 
@@ -81,8 +83,8 @@ Create a simple Deno task that updates your `.env.private.ts` and
 You can configure the visibility of each variable by setting its `public`
 boolean config field. By default all variables are private.
 
-`Auto-env` generates two modules, `.env.private.ts` and `.env.public.ts`,
-which provides you with a strong basis for further lint rules or import checks to
+`Auto-env` generates two modules, `.env.private.ts` and `.env.public.ts`, which
+provides you with a strong basis for further lint rules or import checks to
 increase strictness.
 
 ## Usage

@@ -28,7 +28,7 @@
     "valibot": "jsr:@valibot/valibot@^1.4.2"
   },
   "fmt": {
-    "exclude": [".env*"]
+    "exclude": ["e2e/.env*"]
   },
   "publish": {
     "exclude": [

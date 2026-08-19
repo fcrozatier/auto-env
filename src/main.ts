@@ -81,8 +81,7 @@ export type Options = {
 const newLine = /\n/;
 
 function tsMultilineComment(content: string) {
-  return `
-/**
+  return `/**
  * ${content}
  */
 `;

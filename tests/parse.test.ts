@@ -1,7 +1,7 @@
 import { assertEquals, unreachable } from "@std/assert";
 import { assert } from "@std/assert/assert";
 import { inlineComment, parse } from "$/src/parse.ts";
-import { ERROR_MESSAGE } from "$/src/errors.ts";
+import { ERROR_MESSAGE } from "$/src/constants.ts";
 
 Deno.test("handles basic syntax", () => {
   const [row] = parse("KEY=value");

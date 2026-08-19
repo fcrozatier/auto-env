@@ -15,7 +15,7 @@
     }
   },
   "exports": {
-    ".": "./main.ts"
+    ".": "./src/main.ts"
   },
   "imports": {
     "$/": "./",
@@ -35,9 +35,7 @@
       ".github",
       ".vscode",
       "assets",
-      ".env*",
-      "scripts",
-      "start.ts",
+      "e2e",
       "tests"
     ]
   }

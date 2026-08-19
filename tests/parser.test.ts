@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import { assertEquals, unreachable } from "@std/assert";
+import { assert } from "@std/assert/assert";
 import { inlineComment, parse } from "../parser.ts";
 
 Deno.test("handles basic syntax", () => {
@@ -103,6 +104,20 @@ URL="https://$\{BASE}:$\{PORT}/$\{PATH}"
     ["PORT", 3000],
     ["URL", "https://example.com:3000/path"],
   ]);
+});
+
+Deno.test("ensures correct interpolation", () => {
+  try {
+    parse(`
+BASE=example.com
+PATH=path
+URL="https://$\{BASE}:$\{PORT}/$\{PATH}"
+`);
+    unreachable();
+  } catch (error) {
+    assert(error instanceof Error);
+    assert(error.message === `[auto-env]: Can't interpolate undefined key "PORT"`);
+  }
 });
 
 const ENV_FILE = `

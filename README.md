@@ -6,9 +6,9 @@ validation, auto generation, scoping, and good defaults.
 **Good defaults**
 
 `Auto-env` lets you fall into
-[the pit of success](https://blog.codinghorror.com/falling-into-the-pit-of-success/),
-by handling `booleans`, `numbers` and `undefined` correctly. For example this
-`.env` file is parsed as you would expect by default:
+[the pit of success](https://blog.codinghorror.com/falling-into-the-pit-of-success/)
+and handles `booleans`, `numbers` and `undefined` correctly. For example this
+`.env` file is parsed as you would expect by default
 
 ```
 DEV=false
@@ -19,7 +19,7 @@ BASE=https://some-domain.com
 URL="${BASE}:${PORT}/path"
 ```
 
-And generates the following ts module:
+...and generates the following ts module:
 
 ```ts
 // .env.private.ts
@@ -41,9 +41,9 @@ In particular:
 
 **Type-safe**
 
-`Auto-env` generates TypeScript modules you can alias and directly import from,
-preventing typos in environment variable names, offering full type-safety and
-documentation.
+`Auto-env` generates TypeScript modules you can alias and directly import from.
+This prevents typos in environment variable names and offers full type-safety
+and documentation.
 
 ![demo](./assets/demo.gif)
 
@@ -83,8 +83,8 @@ Create a simple Deno task that updates your `.env.private.ts` and
 You can configure the visibility of each variable by setting its `public`
 boolean config field. By default all variables are private.
 
-`Auto-env` generates two modules, `.env.private.ts` and `.env.public.ts`,
-providing you with a strong basis for further lint rules or import checks to
+`Auto-env` generates two modules, `.env.private.ts` and `.env.public.ts`, which
+provides you with a strong basis for further lint rules or import checks to
 increase strictness.
 
 ## Usage
@@ -94,8 +94,7 @@ increase strictness.
 2. Update your `.gitignore`
 
 `Auto-env` generates by default the files `.env.private.ts` and
-`.env.public.ts`. To prevent env leak you should ignore them by updating your
-`.env` rule
+`.env.public.ts`. To prevent env leaks, update your `.env` rule
 
 ```diff
 # .gitignore
@@ -120,7 +119,7 @@ import { autoEnv } from "@fcrozatier/auto-env";
 await autoEnv();
 ```
 
-3. Add a task to run script automatically whenever the `.env` file is modified
+3. Add a task to run the script automatically whenever the `.env` file changes
 
 ```jsonc
 // deno.json

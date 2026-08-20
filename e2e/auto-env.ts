@@ -1,4 +1,4 @@
-import { autoEnv } from "../main.ts";
+import { autoEnv } from "$/src/main.ts";
 import * as v from "valibot";
 
 await autoEnv({

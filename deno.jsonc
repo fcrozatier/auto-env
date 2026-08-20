@@ -6,15 +6,17 @@
     "noUncheckedIndexedAccess": true
   },
   "tasks": {
-    "check:all": "deno fmt --check && deno lint && deno check && deno test -A && deno test -A --doc && deno doc --lint main.ts",
-    "gen:env": "deno watch --watch-hmr=.env -A scripts/auto-env.ts",
-    "dev": {
-      "command": "deno watch -A start.ts",
+    "check:all": "deno fmt --check && deno lint && deno check && deno test -A && deno test -A --doc && deno doc --lint src/main.ts",
+    "gen:docs": "deno doc --html src/main.ts && open docs/index.html",
+    "gen:env": "deno watch --watch-hmr=.env -A e2e/auto-env.ts",
+    "test:e2e": {
+      "command": "deno watch -A e2e/start.ts",
       "dependencies": ["gen:env"]
-    }
+    },
+    "test:coverage": "deno test -A --coverage && open coverage/html/index.html"
   },
   "exports": {
-    ".": "./main.ts"
+    ".": "./src/main.ts"
   },
   "imports": {
     "$/": "./",
@@ -30,6 +32,6 @@
     "exclude": [".env*"]
   },
   "publish": {
-    "exclude": [".github", ".vscode", ".env*", "scripts", "start.ts", "tests"]
+    "include": ["src", "README.md"]
   }
 }

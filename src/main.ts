@@ -1,6 +1,8 @@
+import { ERROR_MESSAGE, PREFIX } from "$/src/constants.ts";
+import { parseEnvFile } from "$/src/parse.ts";
+import { validateEnvs } from "$/src/validate.ts";
 import type { StandardSchemaV1 } from "@standard-schema/spec";
 import { dirname } from "@std/path";
-import { type EnvValueType, parse } from "./parser.ts";
 
 /**
  * Environment variable configuration
@@ -55,11 +57,11 @@ export type Options = {
    *
    * Set to `null` to not emit the file
    *
-   * * @default ".generated/env.private.ts"
+   * @default ".generated/env.private.ts"
    */
   privateOutputPath?: string | undefined | null;
   /**
-   * Granular configuration Record. The keys correspond to your env keys you can provide it with a `EnvVarConfig` object for custom validation with a standard schema or control whether it is public or private
+   * Environment variable configuration record. Keys correspond to your env keys. Values can be an {@linkcode EnvVarConfig} object
    *
    * @example
    * ```ts
@@ -76,72 +78,10 @@ export type Options = {
   config?: AutoEnvConfig;
 };
 
-async function parseEnvFile(
-  path: string,
-): Promise<[string, EnvValueType][]> {
-  const textFile = await Deno.readTextFile(path);
-  return parse(textFile);
-}
-
-async function validateEnv(
-  inputValue: EnvValueType,
-  config?: EnvVarConfig,
-): Promise<unknown> {
-  const schema = config?.schema;
-  if (!schema) return inputValue;
-
-  const result = await schema["~standard"].validate(inputValue);
-
-  if (result.issues) {
-    const message = result.issues[0]?.message ?? "[auto-env]: Validation error";
-    throw new ValidationError(message);
-  }
-
-  return result.value;
-}
-
-class ValidationError {
-  message: string;
-
-  constructor(message: string) {
-    this.message = message;
-  }
-}
-
-async function validateEnvs(
-  options: { keyValuePairs: [string, EnvValueType][]; config?: AutoEnvConfig },
-) {
-  const publicEnvs = new Map();
-  const privateEnvs = new Map();
-
-  for (const [key, stringValue] of options.keyValuePairs) {
-    const envConfig = options.config?.[key];
-    try {
-      const value = await validateEnv(stringValue, envConfig);
-
-      (envConfig?.public)
-        ? publicEnvs.set(key, value)
-        : privateEnvs.set(key, value);
-    } catch (error) {
-      if (error instanceof ValidationError) {
-        throw new Error(
-          `[auto-env] Validation error with key "${key}". ${error.message}`,
-          { cause: error },
-        );
-      }
-
-      throw new Error(`[auto-env] Parse error. ${error}`, { cause: error });
-    }
-  }
-
-  return { publicEnvs, privateEnvs };
-}
-
 const newLine = /\n/;
 
 function tsMultilineComment(content: string) {
-  return `
-/**
+  return `/**
  * ${content}
  */
 `;
@@ -171,13 +111,15 @@ const PUBLIC_OUTPUT_DEFAULT = ".env.public.ts";
 const PRIVATE_OUTPUT_DEFAULT = ".env.private.ts";
 
 /**
- * Define and configure your environment variables
+ * Reads and validates your environment variables.
+ *
+ * Outputs TypeScript modules for type-safe env imports
  */
 export async function autoEnv(options?: Options): Promise<{
   publicModuleText: string;
   privateModuleText: string;
 }> {
-  console.log("[auto-env]: generating env modules");
+  console.log(PREFIX + "Generating env modules");
 
   const config = options?.config;
   const inputPath = options?.inputPath ?? ".env";
@@ -187,9 +129,7 @@ export async function autoEnv(options?: Options): Promise<{
   const keys = envs.map(([k]) => k);
   for (const key of Object.keys(config ?? {})) {
     if (!keys.includes(key)) {
-      throw new Error(
-        `[auto-env]: config key "${key}" not found in env file at "${inputPath}". Is this a typo?`,
-      );
+      throw new Error(ERROR_MESSAGE.UnmatchedKey(key, inputPath));
     }
   }
 
@@ -208,7 +148,7 @@ export async function autoEnv(options?: Options): Promise<{
   if (publicModuleText) {
     publicOutputPath
       ? await writeTextFile(publicOutputPath, publicModuleText)
-      : console.log("[auto-env]: no public output path provided. Skipping...");
+      : console.log(PREFIX + "No public output path provided. Skipping...");
   }
 
   const privateOutputPath = options?.privateOutputPath === undefined
@@ -218,7 +158,7 @@ export async function autoEnv(options?: Options): Promise<{
   if (privateModuleText) {
     privateOutputPath
       ? await writeTextFile(privateOutputPath, privateModuleText)
-      : console.log("[auto-env]: no private output path provided. Skipping...");
+      : console.log(PREFIX + "No private output path provided. Skipping...");
   }
 
   return { publicModuleText, privateModuleText };

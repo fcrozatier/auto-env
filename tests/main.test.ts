@@ -1,64 +1,71 @@
-import { assertEquals } from "@std/assert/equals";
-import * as v from "valibot";
-import { autoEnv } from "$/src/main.ts";
-import { unreachable } from "@std/assert/unreachable";
+import { defineEnv } from "$/src/main.ts";
 import { assert } from "@std/assert/assert";
-import { ERROR_MESSAGE } from "$/src/constants.ts";
+import { assertEquals } from "@std/assert/equals";
+import { unreachable } from "@std/assert/unreachable";
+import * as v from "valibot";
 
-const { publicModuleText, privateModuleText } = await autoEnv({
-  inputPath: "tests/input.env",
-  privateOutputPath: null,
-  publicOutputPath: null,
-  config: {
-    DEV: { schema: v.boolean() },
-    DEV_STRING: { schema: v.string() },
-    PORT: { schema: v.number() },
-    PORT_STRING: { schema: v.string() },
-    GREETING: { public: true, description: "Our welcome message" },
-    MULTILINE: { public: true },
-    PRIVATE_KEY: { public: false },
-  },
+const env = await defineEnv({
+  path: "tests/input.env",
+  schema: v.object({
+    DEV: v.boolean(),
+    DEV_STRING: v.string(),
+    PORT: v.number(),
+    PORT_STRING: v.string(),
+    GREETING: v.string(),
+    MULTILINE: v.string(),
+    PRIVATE_KEY: v.string(),
+  }),
 });
 
-const outputPublic = await Deno.readTextFile("tests/output.public.ts");
-const outputPrivate = await Deno.readTextFile("tests/output.private.ts");
-
 Deno.test("happy path", () => {
-  assertEquals(publicModuleText, outputPublic);
-  assertEquals(privateModuleText, outputPrivate);
+  assertEquals(env, {
+    DEV: true,
+    DEV_STRING: "true",
+    PORT: 3000,
+    PORT_STRING: "3000",
+    GREETING: "Hello, World!",
+    MULTILINE: "first line\\nsecond line",
+    PRIVATE_KEY: `
+-----BEGIN EC KEY-----
+MHQCAQEEIBkg...
+-----END EC KEY-----`,
+  });
 });
 
 Deno.test("validation error", async () => {
   try {
-    await autoEnv({
-      inputPath: "tests/input.env",
-      privateOutputPath: null,
-      publicOutputPath: null,
-      config: {
-        DEV: { schema: v.string() },
-      },
+    await defineEnv({
+      path: "tests/input.env",
+      schema: v.object({
+        DEV: v.string(),
+      }),
     });
+
     unreachable();
   } catch (error) {
     assert(error instanceof Error);
-    assert(error.message === ERROR_MESSAGE.ValidationErrorOnKey("DEV"));
+    assert(
+      error.message ===
+        '[auto-env]: Key: "DEV". Invalid type: Expected string but received true',
+    );
   }
 });
 
 Deno.test("unmatched key", async () => {
   const path = "tests/input.env";
   try {
-    await autoEnv({
-      inputPath: path,
-      privateOutputPath: null,
-      publicOutputPath: null,
-      config: {
-        UNMATCHED: { schema: v.string() },
-      },
+    await defineEnv({
+      path,
+      schema: v.object({
+        UNMATCHED: v.string(),
+      }),
     });
     unreachable();
   } catch (error) {
     assert(error instanceof Error);
-    assert(error.message === ERROR_MESSAGE.UnmatchedKey("UNMATCHED", path));
+    assert(
+      error.message ===
+        '[auto-env]: Key: "UNMATCHED". Invalid key: Expected "UNMATCHED" but received undefined',
+    );
   }
 });

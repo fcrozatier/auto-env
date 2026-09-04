@@ -1,7 +1,7 @@
 # Auto-env
 
 Type-safe environment variables for TypeScript projects, with StandardSchema
-validation, auto generation, scoping, and good defaults.
+validation and good defaults.
 
 **Good defaults**
 
@@ -19,17 +19,17 @@ BASE=https://some-domain.com
 URL="${BASE}:${PORT}/path"
 ```
 
-...and generates the following ts module:
+...resulting in the following env object:
 
 ```ts
-// .env.private.ts
-
-export const DEV = false;
-export const RATE_LIMIT = 500;
-export const OPTIONAL = undefined;
-export const PORT = 3000;
-export const BASE = "https://some-domain.com";
-export const URL = "https://some-domain.com:3000/path";
+const env = {
+  DEV: false,
+  RATE_LIMIT: 500,
+  OPTIONAL: undefined,
+  PORT: 3000,
+  BASE: "https://some-domain.com",
+  URL: "https://some-domain.com:3000/path",
+};
 ```
 
 In particular:
@@ -39,36 +39,20 @@ In particular:
 - `OPTIONAL` is `undefined`
 - `URL` is interpolated
 
-**Type-safe**
+**Type-safety**
 
-`Auto-env` generates TypeScript modules you can alias and directly import from.
-This prevents typos in environment variable names and offers full type-safety
-and documentation.
-
-![demo](./assets/demo.gif)
-
-**Validation**
-
-You can pass StandardSchemas to add a validation layer to your environment
-variables.
+`Auto-env` uses StandardSchemas for type-safe env validation:
 
 ```ts
-import { autoEnv } from "@fcrozatier/auto-env";
+import { defineEnv } from "@fcrozatier/auto-env";
 import * as v from "valibot";
 
-await autoEnv({
-  config: {
-    DEV: {
-      schema: v.boolean(),
-    },
-    RATE_LIMIT: {
-      schema: v.pipe(v.number(), v.minValue(500)),
-    },
-    EMAIL: {
-      schema: v.pipe(v.string(), v.email()),
-      public: true,
-    },
-  },
+await defineEnv({
+  schema: v.object({
+    DEV: v.boolean(),
+    RATE_LIMIT: v.pipe(v.number(), v.minValue(500)),
+    EMAIL: v.pipe(v.string(), v.email()),
+  }),
 });
 ```
 
@@ -78,62 +62,27 @@ Create a simple Deno task that updates your `.env.private.ts` and
 `.env.public.ts` modules whenever your `.env` file changes. See the
 [Usage](#usage) example below.
 
-**Scope**
-
-You can configure the visibility of each variable by setting its `public`
-boolean config field. By default all variables are private.
-
-`Auto-env` generates two modules, `.env.private.ts` and `.env.public.ts`, which
-provides you with a strong basis for further lint rules or import checks to
-increase strictness.
-
 ## Usage
 
 1. Install: `deno add jsr:@fcrozatier/auto-env`
 
-2. Update your `.gitignore`
+2. Create an `env.ts` module where you call `defineEnv()`.
 
-`Auto-env` generates by default the files `.env.private.ts` and
-`.env.public.ts`. To prevent env leaks, update your `.env` rule
-
-```diff
-# .gitignore
-
-- .env
-+ .env*
-```
-
-> [!WARNING]
-> Don't skip this step to avoid committing secrets
-
-3. Create an `auto-env.ts` script where you call `autoEnv()`.
-
-Under the hood it parses your `.env` file, validates the entries, and writes the
-output to `.env.private.ts` by default
+Under the hood it parses your `.env` file, validates the entries, and returns a
+typed object
 
 ```ts
-// scripts/auto-env.ts
+// env.ts
+import { defineEnv } from "@fcrozatier/auto-env";
+import * as v from "valibot";
 
-import { autoEnv } from "@fcrozatier/auto-env";
-
-await autoEnv();
-```
-
-3. Add a task to run the script automatically whenever the `.env` file changes
-
-```jsonc
-// deno.json
-
-{
-  // ...
-  "tasks": {
-    "gen:env": "deno watch --watch-hmr=.env -A scripts/auto-env.ts",
-    "start": {
-      "command": "deno watch -A start.ts",
-      "dependencies": ["gen:env"]
-    }
-  }
-}
+await defineEnv({
+  schema: v.object({
+    DEV: v.boolean(),
+    RATE_LIMIT: v.pipe(v.number(), v.minValue(500)),
+    EMAIL: v.pipe(v.string(), v.email()),
+  }),
+});
 ```
 
 ## API

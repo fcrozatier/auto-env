@@ -102,10 +102,3 @@ export function parse(content: string) {
 
   return envs;
 }
-
-export async function parseEnvFile(
-  path: string,
-): Promise<[string, EnvValueType][]> {
-  const textFile = await Deno.readTextFile(path);
-  return parse(textFile);
-}
